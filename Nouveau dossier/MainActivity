@@ -1,0 +1,120 @@
+package com.example.tictactoe;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private Button[][] buttons = new Button[3][3];
+    private boolean Tourj1 = true;
+    private int Compteur;
+    private int PointsJ1;
+    private int PointsJ2;
+    private TextView textViewJoueur1;
+    private TextView textViewJoueur2;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        textViewJoueur1 = findViewById(R.id.text_view_j1);
+        textViewJoueur2 = findViewById(R.id.text_view_j2);
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                String buttonID = "button_" + i + j;
+                int resID = getResources().getIdentifier(buttonID, "id", getPackageName());
+                buttons[i][j] = findViewById(resID);
+                buttons[i][j].setOnClickListener(this);
+            }
+        }
+
+    }
+    @Override
+    public void onClick(View v) {
+        if (!((Button) v).getText().toString().equals("")) {
+            return;
+        }
+        if (Tourj1) {
+            ((Button) v).setText("X");
+        } else {
+            ((Button) v).setText("O");
+        }
+        Compteur++;
+        if (checkForWin()) {
+            if (Tourj1) {
+                J1gagne();
+            } else {
+                J2gagne();
+            }
+        } else if (Compteur == 9) {
+            nul();
+        } else {
+            Tourj1 = !Tourj1;
+        }
+    }
+    private boolean checkForWin() {
+        String[][] field = new String[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                field[i][j] = buttons[i][j].getText().toString();
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            if (field[i][0].equals(field[i][1])
+                    && field[i][0].equals(field[i][2])
+                    && !field[i][0].equals("")) {
+                return true;
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            if (field[0][i].equals(field[1][i])
+                    && field[0][i].equals(field[2][i])
+                    && !field[0][i].equals("")) {
+                return true;
+            }
+        }
+        if (field[0][0].equals(field[1][1])
+                && field[0][0].equals(field[2][2])
+                && !field[0][0].equals("")) {
+            return true;
+        }
+        if (field[0][2].equals(field[1][1])
+                && field[0][2].equals(field[2][0])
+                && !field[0][2].equals("")) {
+            return true;
+        }
+        return false;
+    }
+    private void J1gagne() {
+        PointsJ1++;
+        Toast.makeText(this, "Joueur 1 Gagne", Toast.LENGTH_SHORT).show();
+        updatePointsText();
+        resetBoard();
+    }
+    private void J2gagne() {
+        PointsJ2++;
+        Toast.makeText(this, "Joueur 2 Gagne", Toast.LENGTH_SHORT).show();
+        updatePointsText();
+        resetBoard();
+    }
+    private void nul() {
+        Toast.makeText(this, "Nul", Toast.LENGTH_SHORT).show();
+        resetBoard();
+    }
+    private void updatePointsText() {
+        textViewJoueur1.setText("Joueur 1: " + PointsJ1);
+        textViewJoueur2.setText("Joueur 2: " + PointsJ2);
+    }
+    private void resetBoard() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                buttons[i][j].setText("");
+            }
+        }
+        Compteur = 0;
+        Tourj1 = true;
+    }
+}
